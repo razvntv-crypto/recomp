@@ -34,7 +34,7 @@ body{padding:env(safe-area-inset-top,0) 0 calc(env(safe-area-inset-bottom,0) + 8
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .st{background:var(--field);border-radius:12px;padding:10px}
 .st b{display:block;font-size:16px;font-weight:800}.st span{font-size:11px;color:var(--mute);font-weight:700}
-.up{color:var(--acc)}.dn{color:var(--bad)}.fl{color:var(--mute)}
+.up{color:var(--acc)}.mrow em{color:var(--acc);font-weight:800}.dn{color:var(--bad)}.fl{color:var(--mute)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .x{border:1px solid var(--line);background:transparent;border-radius:9px;height:30px;padding:0 11px;font-size:13px;font-weight:700;color:var(--mute)}
 .x.on{background:var(--acc);border-color:var(--acc);color:var(--accink)}.x.arm{background:var(--bad);border-color:var(--bad);color:#fff}
@@ -66,7 +66,7 @@ textarea{width:100%;background:var(--field);border:0;border-radius:12px;color:va
 .mrow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
 .mrow div{background:var(--field);border-radius:10px;padding:7px 4px;text-align:center}
 .mrow b{display:block;font-size:14px;font-weight:800}.mrow span{font-size:10px;color:var(--mute);font-weight:700}
-.mrow em{display:block;font-style:normal;font-size:10px;font-weight:800;margin-top:1px}
+.mrow em{display:block;font-style:normal;font-size:11px;font-weight:800;margin-top:1px}
 </style>
 </head>
 <body>
@@ -155,7 +155,7 @@ function viewBody(){
  arr.forEach(function(e,i){var p=arr[i+1];
   h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>'+new Date(e.d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</b><button class="x'+(arm===e.id?' arm':'')+'" data-md="'+e.id+'">'+(arm===e.id?'Sure?':'Delete')+'</button></div><div class="mrow">';
   MS.forEach(function(m){var v=e.v[m[0]],pv=p&&p.v[m[0]];
-   h+='<div><b>'+(v?f1(v):'–')+'</b><span>'+m[1]+'</span>'+(v&&pv?'<em class="fl">'+(v>pv?'+':'')+f1(v-pv)+'</em>':'')+'</div>'});
+   h+='<div><b>'+(v?f1(v):'–')+'</b><span>'+m[1]+'</span>'+(v&&pv?'<em>'+(v>pv?'+':'')+f1(v-pv)+'</em>':'')+'</div>'});
   h+='</div></div>'});
  return h}
 
