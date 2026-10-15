@@ -6,8 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Recomp</title>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="apple-touch-icon-precomposed" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png?v=3">
+<link rel="apple-touch-icon-precomposed" sizes="180x180" href="apple-touch-icon.png?v=3">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <meta name="apple-mobile-web-app-title" content="Recomp">
 <meta name="theme-color" content="#0b0f0e">
@@ -34,7 +34,7 @@ body{padding:env(safe-area-inset-top,0) 0 calc(env(safe-area-inset-bottom,0) + 8
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
 .st{background:var(--field);border-radius:12px;padding:10px}
 .st b{display:block;font-size:16px;font-weight:800}.st span{font-size:11px;color:var(--mute);font-weight:700}
-.up{color:var(--acc)}.mrow em{color:var(--acc);font-weight:800}.dn{color:var(--bad)}.fl{color:var(--mute)}
+.up{color:var(--acc)}.gd{color:var(--acc);font-weight:800}.mrow em{color:var(--acc);font-weight:800}.dn{color:var(--bad)}.fl{color:var(--mute)}
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .x{border:1px solid var(--line);background:transparent;border-radius:9px;height:30px;padding:0 11px;font-size:13px;font-weight:700;color:var(--mute)}
 .x.on{background:var(--acc);border-color:var(--acc);color:var(--accink)}.x.arm{background:var(--bad);border-color:var(--bad);color:#fff}
@@ -78,7 +78,7 @@ var MS=[['waist','Waist'],['chest','Chest'],['arm','Arm'],['thigh','Thigh'],['ne
 var S={w:[],m:[],goal:0,theme:'auto'};
 try{var r0=localStorage.getItem('recomp');if(r0)S=Object.assign(S,JSON.parse(r0))}catch(e){}
 function save(){try{localStorage.setItem('recomp',JSON.stringify(S))}catch(e){}}
-var editId=null,tab='w',setv=false,rng=90,exp=null,arm=null,draft={k:'',n:'',d:''},mdraft={d:'',v:{}},tT;
+var editId=null,editM=null,tab='w',setv=false,rng=90,exp=null,arm=null,draft={k:'',n:'',d:''},mdraft={d:'',v:{}},tT;
 function pad(n){return('0'+n).slice(-2)}
 function today(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
 function T(d){return new Date(d+'T12:00:00').getTime()}
@@ -87,7 +87,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function f1(n){return (Math.round(n*10)/10).toFixed(1)}
 function f2(n){return (Math.round(n*100)/100).toFixed(2)}
-function sg(n,u,dec){var v=Math.round(n*100)/100;if(Math.abs(v)<(dec===0?1:0.05))return'<span class="fl">±0 '+u+'</span>';return'<span class="fl">'+(v>0?'+':'')+(dec===0?v:f1(v))+' '+u+'</span>'}
+function sg(n,u,dec){var v=Math.round(n*100)/100;if(Math.abs(v)<(dec===0?1:0.05))return'<span class="gd">±0 '+u+'</span>';return'<span class="gd">'+(v>0?'+':'')+(dec===0?v:f1(v))+' '+u+'</span>'}
 function sgPlain(n,u){var v=Math.round(n*10)/10;return(v>0?'+':'')+f1(v)+' '+u}
 function dl(d){var t=today();if(d===t)return'Today';var y=new Date();y.setDate(y.getDate()-1);if(d===y.getFullYear()+'-'+pad(y.getMonth()+1)+'-'+pad(y.getDate()))return'Yesterday';return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}
 function ds(d){return new Date(d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'})}
@@ -148,12 +148,12 @@ function viewWeight(){
 
 function viewBody(){
  var h='<div class="top"><h1>Body</h1><button class="ic" data-a="set" aria-label="Settings">⚙︎</button></div>';
- h+='<div class="card"><div class="fld">'+MS.map(function(m){return'<div><label>'+m[1]+' (cm)</label><input data-mv="'+m[0]+'" inputmode="decimal" value="'+esc(mdraft.v[m[0]]||'')+'"></div>'}).join('')+'<div><label>Date</label><input id="md" type="date" value="'+esc(mdraft.d||today())+'" max="'+today()+'" style="font-size:15px"></div></div><button class="go" data-a="addm" style="width:100%;margin-top:10px">Save measurements</button></div>';
+ h+='<div class="card"><div class="fld">'+MS.map(function(m){return'<div><label>'+m[1]+' (cm)</label><input data-mv="'+m[0]+'" inputmode="decimal" value="'+esc(mdraft.v[m[0]]||'')+'"></div>'}).join('')+'<div><label>Date</label><input id="md" type="date" value="'+esc(mdraft.d||today())+'" max="'+today()+'" style="font-size:15px"></div></div><button class="go" data-a="addm" style="width:100%;margin-top:10px">'+(editM?'Update measurements':'Save measurements')+'</button>'+(editM?'<button class="x" data-a="cancelm" style="width:100%;margin-top:8px;height:38px">Cancel</button>':'')+'</div>';
  var arr=S.m.slice().sort(function(a,b){return a.d<b.d?1:a.d>b.d?-1:0});
  if(!arr.length)return h+'<div class="empty">Measure once a month, same time of day, relaxed.<br>Waist at the navel, arm flexed.</div>';
  h+='<div class="lab">History</div>';
  arr.forEach(function(e,i){var p=arr[i+1];
-  h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>'+new Date(e.d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</b><button class="x'+(arm===e.id?' arm':'')+'" data-md="'+e.id+'">'+(arm===e.id?'Sure?':'Delete')+'</button></div><div class="mrow">';
+  h+='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><b>'+new Date(e.d+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})+'</b><span style="display:flex;gap:8px"><button class="x" data-me="'+e.id+'">Edit</button><button class="x'+(arm===e.id?' arm':'')+'" data-md="'+e.id+'">'+(arm===e.id?'Sure?':'Delete')+'</button></span></div><div class="mrow">';
   MS.forEach(function(m){var v=e.v[m[0]],pv=p&&p.v[m[0]];
    h+='<div><b>'+(v?f1(v):'–')+'</b><span>'+m[1]+'</span>'+(v&&pv?'<em>'+(v>pv?'+':'')+f1(v-pv)+'</em>':'')+'</div>'});
   h+='</div></div>'});
@@ -186,10 +186,11 @@ document.addEventListener('click',function(e){
  if(!t){var r=e.target.closest('[data-xr]');if(r){var id=r.dataset.xr;exp=exp===id?null:id;arm=null;render()}return}
  var D=t.dataset;
  if(D.xd===undefined&&D.md===undefined)arm=null;
- if(D.tab){tab=D.tab;exp=null;editId=null;render();fx(document.getElementById('app'));window.scrollTo(0,0);return}
+ if(D.tab){tab=D.tab;exp=null;editId=null;editM=null;render();fx(document.getElementById('app'));window.scrollTo(0,0);return}
  if(D.rng!==undefined){rng=+D.rng;render();return}
  if(D.theme){S.theme=D.theme;save();applyTheme();render();return}
  if(D.xe){startEdit(D.xe);return}
+ if(D.me){var me=S.m.filter(function(m){return m.id===D.me})[0];if(me){editM=me.id;mdraft={d:me.d,v:{}};MS.forEach(function(k){if(me.v[k[0]])mdraft.v[k[0]]=String(me.v[k[0]])});render();window.scrollTo(0,0)}return}
  if(D.xd){if(arm===D.xd){S.w=S.w.filter(function(w){return w.id!==D.xd});arm=null;exp=null;save();toast('Deleted')}else arm=D.xd;render();return}
  if(D.md){if(arm===D.md){S.m=S.m.filter(function(w){return w.id!==D.md});arm=null;save();toast('Deleted')}else arm=D.md;render();return}
  switch(D.a){
@@ -202,7 +203,10 @@ document.addEventListener('click',function(e){
    draft={k:'',n:'',d:''};save();render();toast('Saved');break}
   case'addm':{var v={},any=false;MS.forEach(function(m){var n=num(mdraft.v[m[0]]);if(n>0&&n<300){v[m[0]]=Math.round(n*10)/10;any=true}});
    if(!any){toast('Enter at least one measurement');return}
-   S.m.push({id:uid(),d:mdraft.d||today(),v:v});mdraft={d:'',v:{}};save();render();toast('Saved');break}
+   if(editM){var em=S.m.filter(function(m){return m.id===editM})[0];if(em){em.v=v;em.d=mdraft.d||today()}editM=null}
+   else S.m.push({id:uid(),d:mdraft.d||today(),v:v});
+   mdraft={d:'',v:{}};save();render();toast('Saved');break}
+  case'cancelm':editM=null;mdraft={d:'',v:{}};render();break;
   case'exp':document.getElementById('bk').value=JSON.stringify({w:S.w,m:S.m,goal:S.goal});break;
   case'cp':{var b=document.getElementById('bk');if(!b.value)b.value=JSON.stringify({w:S.w,m:S.m,goal:S.goal});b.select();try{navigator.clipboard.writeText(b.value);toast('Copied')}catch(x){document.execCommand&&document.execCommand('copy');toast('Copied')}break}
   case'imp':try{var o=JSON.parse(document.getElementById('bk').value);if(!o||!Array.isArray(o.w))throw 0;S.w=o.w;S.m=Array.isArray(o.m)?o.m:[];S.goal=+o.goal||0;save();render();toast('Imported')}catch(x){toast('Invalid text, paste the full backup')}break;
